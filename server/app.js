@@ -21,7 +21,7 @@ import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import { corsOptions } from "./constants/config.js";
 import { socketAuthenticator } from "./middlewares/auth.js";
-
+import { rateLimit } from 'express-rate-limit'
 import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
 import adminRoute from "./routes/admin.js";
@@ -46,6 +46,21 @@ cloudinary.config({
 });
 
 const app = express();
+
+
+const limiter = rateLimit({
+	windowMs:  10 * 1000, // 15 minutes
+	limit: 10, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	// store: ... , // Redis, Memcached, etc. See below.
+})
+
+// Apply the rate limiting middleware to all requests.
+app.use(limiter)
+
+
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: corsOptions,
