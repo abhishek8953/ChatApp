@@ -25,6 +25,7 @@ import { rateLimit } from 'express-rate-limit'
 import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
 import adminRoute from "./routes/admin.js";
+import { db, app as espRouter } from "./routes/esp.js"
 
 dotenv.config({
   path: "./.env",
@@ -76,6 +77,7 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/admin", adminRoute);
+app.use("/v2",espRouter)  //for remote control 
 
 app.get("/", (req, res) => {
   res.send("Hello World");
@@ -159,8 +161,17 @@ io.on("connection", (socket) => {
 
 app.use(errorMiddleware);
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port} in ${envMode} Mode`);
+db.ref(".info/connected").on("value", (snapshot) => {
+	if (snapshot.val() === true) {
+		console.log("✅ Firebase Database connected successfully!");
+		server.listen(port, () => {
+			console.log(`Server running on port ${port}`);
+			// setupFirebaseListener();
+		});
+	} else {
+		console.log("❌ Firebase Database NOT connected!");
+	}
 });
+
 
 export { envMode, adminSecretKey, userSocketIDs };
