@@ -20,8 +20,7 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 
 // Real-time Stream Listener
 // function setupFirebaseListener() {
