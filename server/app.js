@@ -79,7 +79,7 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/admin", adminRoute);
-app.use("/v2",espRouter)  //for remote control 
+// app.use("/v2",espRouter)  //for remote control 
 
 app.get("/", (req, res) => {
   res.send("Hello World");
